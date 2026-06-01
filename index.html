@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradiente Conjugado - Exposición</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align: center;">Método del Gradiente Conjugado</h1>
+    <p class="note">La Matriz A debe ser <strong>simétrica</strong> y <strong>definida positiva</strong> para que el método converja correctamente.</p>
+
+    <div class="matrix-section">
+        <div class="input">
+            <h3>Matriz A</h3>
+            <div class="grid-2x2">
+                <input type="number" id="a00" value="4">
+                <input type="number" id="a01" value="1">
+                <input type="number" id="a10" value="1">
+                <input type="number" id="a11" value="3">
+            </div>
+        </div>
+
+        <div class="input">
+            <h3>Vector b</h3>
+            <div class="grid-2x1">
+                <input type="number" id="b0" value="1">
+                <input type="number" id="b1" value="2">
+            </div>
+        </div>
+
+        <div class="input">
+            <h3>Vector x₀ (Inicial)</h3>
+            <div class="grid-2x1">
+                <input type="number" id="x0" value="2">
+                <input type="number" id="x1" value="1">
+            </div>
+        </div>
+    </div>
+
+    <button onclick="calcularGradiente()">Calcular y Graficar</button>
+
+    <div id="resultados"></div>
+
+    <!-- Contenedor del visualizador offline -->
+    <div class="canvas-container" id="visualizador">
+        <h3 style="color: var(--primary);">Visualización de Convergencia</h3>
+        <canvas id="plano" width="500" height="400"></canvas>
+    </div>
+</div>
+
+<script src="js/algorithm.js"></script>
+
+</body>
+</html>
