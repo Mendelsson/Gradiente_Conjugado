@@ -27,7 +27,7 @@
         }
 
         let r = vecSub(b, matVecMult(A, x)); // r_0
-        let p = [...r];                      // p_0
+        let d = [...r];                      // d_0
         let rsold = dot(r, r);
         
         let htmlTable = `
@@ -37,7 +37,7 @@
                     <th>x_k</th>
                     <th>r_k (Residuo)</th>
                     <th>‖r_k‖ (Norma)</th>
-                    <th>p_k (Dirección)</th>
+                    <th>d_k (Dirección)</th>
                     <th>α_k (Paso)</th>
                 </tr>
         `;
@@ -46,8 +46,8 @@
         let k = 0;
 
         while (k < max_iter) {
-            let Ap = matVecMult(A, p);
-            let alpha = rsold / dot(p, Ap);
+            let Ad = matVecMult(A, d);
+            let alpha = rsold / dot(d, Ad);
             
             // Imprimimos el estado actual (Fila k) incluyendo la norma de r_k
             htmlTable += `
@@ -56,14 +56,14 @@
                     <td>[${x[0].toFixed(4)}, ${x[1].toFixed(4)}]</td>
                     <td>[${r[0].toFixed(4)}, ${r[1].toFixed(4)}]</td>
                     <td>${Math.sqrt(rsold).toFixed(4)}</td>
-                    <td>[${p[0].toFixed(4)}, ${p[1].toFixed(4)}]</td>
+                    <td>[${d[0].toFixed(4)}, ${d[1].toFixed(4)}]</td>
                     <td>${alpha.toFixed(4)}</td>
                 </tr>
             `;
 
             // Actualizamos al siguiente paso matemático (k+1)
-            x = vecAdd(x, vecScale(p, alpha));
-            r = vecSub(r, vecScale(Ap, alpha));
+            x = vecAdd(x, vecScale(d, alpha));
+            r = vecSub(r, vecScale(Ad, alpha));
             historialX.push([...x]); 
 
             let rsnew = dot(r, r);
@@ -86,7 +86,7 @@
 
             // Calculamos beta y la nueva dirección p_k+1
             let beta = rsnew / rsold;
-            p = vecAdd(r, vecScale(p, beta));
+            d = vecAdd(r, vecScale(d, beta));
             rsold = rsnew;
         }
 
@@ -114,11 +114,11 @@
 
         // 1. Encontrar límites dinámicos para la escala
         let minX = 0, maxX = 0, minY = 0, maxY = 0;
-        puntos.forEach(p => {
-            if (p[0] < minX) minX = p[0];
-            if (p[0] > maxX) maxX = p[0];
-            if (p[1] < minY) minY = p[1];
-            if (p[1] > maxY) maxY = p[1];
+        puntos.forEach(d => {
+            if (d[0] < minX) minX = d[0];
+            if (d[0] > maxX) maxX = d[0];
+            if (d[1] < minY) minY = d[1];
+            if (d[1] > maxY) maxY = d[1];
         });
 
         minX = Math.min(0, minX); maxX = Math.max(0, maxX);
@@ -142,7 +142,7 @@
         const data = imgData.data;
 
         // Calcular los valores de f(x) en los puntos exactos de la trayectoria
-        let f_puntos = puntos.map(p => 0.5 * (A[0][0]*p[0]*p[0] + (A[0][1] + A[1][0])*p[0]*p[1] + A[1][1]*p[1]*p[1]) - (b[0]*p[0] + b[1]*p[1]));
+        let f_puntos = puntos.map(d => 0.5 * (A[0][0]*d[0]*d[0] + (A[0][1] + A[1][0])*d[0]*d[1] + A[1][1]*d[1]*d[1]) - (b[0]*d[0] + b[1]*d[1]));
         let minF = Math.min(...f_puntos);
         let maxF = Math.max(...f_puntos);
         
@@ -198,24 +198,24 @@
         ctx.beginPath();
         ctx.strokeStyle = 'var(--secondary)';
         ctx.lineWidth = 2;
-        puntos.forEach((p, i) => {
-            let [px, py] = alLienzo(p[0], p[1]);
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
+        puntos.forEach((d, i) => {
+            let [dx, dy] = alLienzo(d[0], d[1]);
+            if (i === 0) ctx.moveTo(dx, dy);
+            else ctx.lineTo(dx, dy);
         });
         ctx.stroke();
 
         // 4. Dibujar los puntos y etiquetas (x0, x1, x2...)
-        puntos.forEach((p, i) => {
-            let [px, py] = alLienzo(p[0], p[1]);
+        puntos.forEach((d, i) => {
+            let [dx, dy] = alLienzo(d[0], d[1]);
             
             ctx.beginPath();
             ctx.fillStyle = i === puntos.length - 1 ? '#4caf50' : '#d32f2f'; 
-            ctx.arc(px, py, 5, 0, Math.PI * 2);
+            ctx.arc(dx, dy, 5, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = '#333';
             ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(`x${i}`, px + 8, py - 8);
+            ctx.fillText(`x${i}`, dx + 8, dy - 8);
         });
     }
